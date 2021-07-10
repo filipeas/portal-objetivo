@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class Material extends Model
 {
@@ -27,6 +29,23 @@ class Material extends Model
         return $this->belongsTo(Curso::class, 'curso', 'id');
     }
 
+    public function checkRemoveMaterial()
+    {
+        $countNullable = 0;
+        if ($this->pdf == null)
+            $countNullable += 1;
+        if ($this->doc == null)
+            $countNullable += 1;
+        if ($this->link_video == null)
+            $countNullable += 1;
+
+        if ($countNullable == 3) {
+            $this->delete();
+        }
+
+        return false;
+    }
+
     public static function boot()
     {
         parent::boot();
@@ -37,7 +56,8 @@ class Material extends Model
         });
 
         self::deleting(function (Material $material) {
-            // 
+            File::delete(storage_path('app/public' . $material->pdf));
+            File::delete(storage_path('app/public' . $material->doc));
         });
     }
 }

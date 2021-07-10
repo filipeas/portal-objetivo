@@ -6,9 +6,14 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCurso extends FormRequest
 {
-    public function response(array $errors)
+    public function messages()
     {
-        return response()->json($errors, 422);
+        return [
+            'name.*' => 'Você deve informar pelo menos 3 caracteres e no máximo 50 caracteres no campo NOME',
+            // 'cover.*' => 'Você deve informar uma capa.',
+            'start_date.*' => 'Você deve informar uma data de início do curso.',
+            'end_date.*' => 'Você deve informar uma data de término do curso.',
+        ];
     }
 
     /**
@@ -30,7 +35,7 @@ class UpdateCurso extends FormRequest
     {
         return [
             'name' => ['required', 'min:3', 'max:50'],
-            'cover' => ['required'],
+            // 'cover' => ['string'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date'],
         ];

@@ -11,6 +11,14 @@ use Exception;
 class AdministradorController extends Controller
 {
     /**
+     * Método responsável por retornar view inicial do administrativo
+     */
+    public function home()
+    {
+        return view('administrativo.home');
+    }
+
+    /**
      * Método responsável por retornar todos os administradores cadastrados no sistema.
      * 
      */

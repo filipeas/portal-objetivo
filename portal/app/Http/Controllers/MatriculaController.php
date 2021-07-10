@@ -59,6 +59,7 @@ class MatriculaController extends Controller
 
         try {
             $matricula = Matricula::create([
+                'user' => auth()->user()->id,
                 'aluno' => $request->aluno,
                 'curso' => $request->curso,
             ]);

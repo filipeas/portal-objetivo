@@ -2,14 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Str;
 use App\Curso;
 use App\Http\Requests\CreateCurso;
 use App\Http\Requests\UpdateCurso;
 use App\Http\Resources\Curso as ResourcesCurso;
 use Exception;
+use \Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class CursoController extends Controller
 {
+    public function getImageCrop()
+    {
+    }
+
+    public function postImageCrop(Request $request)
+    {
+        // limpar diretório upload
+        // $file = new Filesystem;
+        // $file->cleanDirectory(public_path('upload'));
+
+        $data = $request->image;
+
+        list($type, $data) = explode(';', $data);
+        list(, $data)      = explode(',', $data);
+
+        $data = base64_decode($data);
+        $image_name = time() . '.png';
+        $path = public_path() . "/upload/" . $image_name;
+
+        file_put_contents($path, $data);
+
+        return response()->json(['success' => 'done', 'image' => $path]);
+    }
+
     /**
      * Método responsável por listar todos os cursos.
      * 
@@ -20,7 +47,7 @@ class CursoController extends Controller
     public function index()
     {
         return view('administrativo.curso.index', [
-            'cursos' => ResourcesCurso::collection(Curso::all()),
+            'cursos' => ResourcesCurso::collection(Curso::paginate(150)),
         ]);
     }
 
@@ -42,10 +69,25 @@ class CursoController extends Controller
      */
     public function store(CreateCurso $request)
     {
+        if (file_exists($request->cover)) {
+            $str = explode('/', $request->cover);
+            File::copy($request->cover, storage_path('app/public/cover/' . $str[count($str) - 1]));
+        } else {
+            return redirect()->back()->withErrors([
+                'error' => true,
+                'message' => 'Você deve informar uma capa.',
+            ]);
+        }
+
+        // remove cover tmp
+        File::delete($request->cover);
+
         try {
             $curso = Curso::create([
+                'user' => auth()->user()->id,
                 'name' => $request->name,
-                'cover' => $request->cover,
+                'slug' => Str::slug($request->name) . time(),
+                'cover' => $str[count($str) - 1],
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
             ]);
@@ -78,6 +120,7 @@ class CursoController extends Controller
 
         return view('administrativo.curso.show', [
             'curso' => $curso,
+            'materiais' => $curso->material()->get(),
         ]);
     }
 
@@ -115,21 +158,38 @@ class CursoController extends Controller
         $curso = Curso::where('slug', $slug_curso)->first();
 
         if (is_null($curso)) {
-            return redirect()->route('admin.curso.index')->with([
+            return redirect()->route('admin.curso.index')->withErrors([
                 'error' => true,
                 'message' => 'Não foi possível encontrar o curso informado.',
             ]);
         }
 
+        if ($request->cover != null) {
+            if (file_exists($request->cover)) {
+                $str = explode('/', $request->cover);
+                File::copy($request->cover, storage_path('app/public/cover/' . $str[count($str) - 1]));
+                File::delete(storage_path('app/public/cover/' . $curso->cover));
+
+                $curso->cover = $str[count($str) - 1];
+            } else {
+                return redirect()->back()->withErrors([
+                    'error' => true,
+                    'message' => 'Você deve informar uma capa.',
+                ]);
+            }
+        }
+
+        // remove cover tmp
+        File::delete($request->cover);
+
         try {
             $curso->name = $request->name;
-            $curso->slug = $curso->createSlug($request->name);
-            $curso->cover = $request->cover;
+            $curso->slug = Str::slug($request->name) . time();
             $curso->start_date = $request->start_date;
             $curso->end_date = $request->end_date;
             $curso->save();
         } catch (Exception $ex) {
-            return redirect()->back()->withInput()->with([
+            return redirect()->back()->withErrors([
                 'error' => true,
                 'message' => $ex->getMessage(),
             ]);
