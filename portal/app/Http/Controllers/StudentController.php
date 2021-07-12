@@ -6,6 +6,7 @@ use App\Curso;
 use App\Http\Requests\CreateStudent;
 use App\Http\Requests\UpdatePassword;
 use App\Http\Requests\UpdateStudent;
+use App\Http\Resources\CursosMatricula;
 use App\Http\Resources\Student;
 use App\Matricula;
 use App\User;
@@ -21,7 +22,7 @@ class StudentController extends Controller
     public function home()
     {
         return view('aluno.home', [
-            'cursos' => Matricula::where('student', auth()->user()->id)->first()->curso()->orderBy('created_at', 'DESC')->take(8)->get(),
+            'cursos' => CursosMatricula::collection(Matricula::where('student', auth()->user()->id)->get()),
         ]);
     }
 
@@ -66,7 +67,7 @@ class StudentController extends Controller
             ]);
         }
 
-        return redirect()->route('student.config.edit');
+        return redirect()->route('admin.student.index');
     }
 
     /**
@@ -198,6 +199,6 @@ class StudentController extends Controller
 
         $aluno->delete();
 
-        return redirect()->route('student.config.edit');
+        return redirect()->route('admin.student.index');
     }
 }

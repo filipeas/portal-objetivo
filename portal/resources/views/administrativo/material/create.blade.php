@@ -53,9 +53,9 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="inputLink">Link do vídeo (apenas o código do vídeo)</label>
-                        <input name="link_video" type="text" class="form-control" id="inputLink"
+                        <input name="link_video" type="text" class="form-control" id="inputLink" placeholder="Ex: pG2BMnPqfgo"
                             value="{{ old('link_video') }}">
-                        <small class="form-text text-muted">Informe um link de vídeo para o material.</small>
+                        <small class="form-text text-muted">Informe um link de vídeo para o material (apenas o código do vídeo).</small>
                     </div>
                 </div>
                 <div class="col-md-6">

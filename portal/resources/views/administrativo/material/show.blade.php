@@ -102,22 +102,28 @@
                 </div>
             </div>
 
-            @if ($material->type_video)
+            @if ($material->type_video === 1)
                 <div class="col-md-2"></div>
                 <div class="col-md-8 text-center">
-                    <h4>Vídeo embutido</h4>
+                    <h4>Vídeo</h4>
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ $material->link_video }}"
                         title="YouTube video player" frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen></iframe>
                 </div>
                 <div class="col-md-2"></div>
+            @elseif($material->type_video === 0)
+                <div class="col-md-2"></div>
+                <div class="col-md-8 text-center">
+                    <h4>Vídeo</h4>
+                    <iframe src="https://player.vimeo.com/video/{{ $material->link_video }}" width="640" height="360"
+                        frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="col-md-2"></div>
             @else
                 <div class="col-md-2"></div>
                 <div class="col-md-8 text-center">
-                    <h4>Vídeo embutido</h4>
-                    <iframe src="https://player.vimeo.com/video/{{ $material->link_video }}" width="640" height="360"
-                        frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                    <h4>Não há vídeo para esse material</h4>
                 </div>
                 <div class="col-md-2"></div>
             @endif

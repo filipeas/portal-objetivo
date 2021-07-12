@@ -65,7 +65,7 @@ class User extends Authenticatable
         self::deleting(function (User $user) {
             $user->material()->delete();
             $user->curso()->delete();
-            $user->matricula()->delete();
+            $user->getMatriculasStudent()->delete();
         });
     }
 }

@@ -7,7 +7,7 @@ use App\Curso;
 use App\Http\Requests\CreateCurso;
 use App\Http\Requests\UpdateCurso;
 use App\Http\Resources\Curso as ResourcesCurso;
-use App\Material;
+use App\Http\Resources\CursosMatricula;
 use App\Matricula;
 use Exception;
 use \Illuminate\Http\Request;
@@ -49,14 +49,14 @@ class CursoController extends Controller
     public function index()
     {
         return view('administrativo.curso.index', [
-            'cursos' => ResourcesCurso::collection(Curso::paginate(150)),
+            'cursos' => ResourcesCurso::collection(Curso::get()),
         ]);
     }
 
     public function indexStudent()
     {
         return view('aluno.curso.index', [
-            'cursos' => ResourcesCurso::collection(Curso::paginate(150)),
+            'cursos' => CursosMatricula::collection(Matricula::where('student', auth()->user()->id)->get()),
         ]);
     }
 
@@ -136,12 +136,21 @@ class CursoController extends Controller
 
     public function showStudent(string $slug_curso)
     {
-        $curso = Matricula::where('student', auth()->user()->id)->first()->curso()->where('slug', $slug_curso)->first();
+        $curso = Curso::where('slug', $slug_curso)->first();
 
         if (is_null($curso)) {
-            return redirect()->route('student.curso.index')->with([
+            return redirect()->route('admin.curso.index')->with([
                 'error' => true,
                 'message' => 'Não foi possível encontrar o curso informado.',
+            ]);
+        }
+
+        $matricula = Matricula::where('student', auth()->user()->id)->where('curso', $curso->id)->first();
+
+        if (is_null($matricula)) {
+            return redirect()->route('student.curso.index')->with([
+                'error' => true,
+                'message' => 'Você não está matriculado nesse curso.',
             ]);
         }
 

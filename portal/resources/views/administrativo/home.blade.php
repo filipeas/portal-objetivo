@@ -22,7 +22,7 @@
     <div class="row">
         <div class="col-md-12 bg-gray-apple pt-3 mb-5 rounded">
             <h3>Cursos recentes</h3>
-            <a class="btn btn-primary" href="{{ route('admin.curso.index') }}">Ver mais</a>
+            <a class="btn btn-primary mb-2" href="{{ route('admin.curso.index') }}">Ver mais cursos</a>
             <div class="row">
                 @foreach ($cursos as $curso)
                     <div class="col-md-3 mb-3">
@@ -66,11 +66,13 @@
     <div class="row">
         <div class="col-md-12 bg-gray-apple p-3 mb-5 rounded">
             <h3>Matrículas recentes</h3>
-            <a class="btn btn-primary" href="{{ route('admin.student.index') }}">Ver mais alunos</a>
-            <table class="table table-hover table-dark m-1 mt-5 text-center">
+            <a class="btn btn-primary mb-2" href="{{ route('admin.student.index') }}">Ver mais alunos</a>
+            <table class="table table-hover table-dark m-1 text-center">
                 <thead>
                     <tr>
                         <th scope="col">Aluno</th>
+                        <th scope="col">Curso</th>
+                        <th scope="col">Matriculado em</th>
                         <th scope="col"><i class="far fa-eye"></i></th>
                         <th scope="col"><i class="far fa-trash-alt"></i></th>
                     </tr>
@@ -80,6 +82,12 @@
                         <tr>
                             <th scope="row">
                                 {{ $matricula->aluno()->first()->name . ' ' . $matricula->aluno()->first()->lastname }}
+                            </th>
+                            <th scope="row">
+                                {{ $matricula->curso()->first()->name }}
+                            </th>
+                            <th scope="row">
+                                {{ date('d/m/Y', strtotime($matricula->created_at)) }}
                             </th>
                             <td>
                                 <a class="btn btn-primary w-100 mt-1 mb-1"

@@ -50,7 +50,7 @@
                 <hr>
             </div>
 
-            @if ($material->type_video)
+            @if ($material->type_video === 1)
                 <div class="col-md-2"></div>
                 <div class="col-md-8 text-center">
                     <h4>Vídeo</h4>
@@ -60,12 +60,18 @@
                         allowfullscreen></iframe>
                 </div>
                 <div class="col-md-2"></div>
-            @else
+            @elseif($material->type_video === 0)
                 <div class="col-md-2"></div>
                 <div class="col-md-8 text-center">
                     <h4>Vídeo</h4>
                     <iframe src="https://player.vimeo.com/video/{{ $material->link_video }}" width="640" height="360"
                         frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="col-md-2"></div>
+            @else
+            <div class="col-md-2"></div>
+                <div class="col-md-8 text-center">
+                    <h4>Não há vídeo para esse material</h4>
                 </div>
                 <div class="col-md-2"></div>
             @endif

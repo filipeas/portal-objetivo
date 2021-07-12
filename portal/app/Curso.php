@@ -40,7 +40,9 @@ class Curso extends Model
 
         self::deleting(function (Curso $curso) {
             $curso->matricula()->delete();
-            $curso->material()->delete();
+            foreach ($curso->material()->get() as $material) {
+                $material->delete();
+            }
             File::delete(storage_path('app/public/cover/' . $curso->cover));
         });
     }
