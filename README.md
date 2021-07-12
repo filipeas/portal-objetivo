@@ -13,10 +13,10 @@ Foi projetado um modelo MER baseado nas requisições do desafio. Observe o mode
 
 O modelo conta com dois usuários, sendo eles **Administrador** e **Aluno**.
 O Administrador gerencia todo o sistema de controle de cursos, podendo realizar:
-* 1) CRUD de Cursos;
-* 2) CRUD de Materiais de um Curso;
-* 3) CRUD de Alunos;
-* 4) CRUD de Matrículas de Alunos aos Cursos;
+1) CRUD de Cursos;
+2) CRUD de Materiais de um Curso;
+3) CRUD de Alunos;
+4) CRUD de Matrículas de Alunos aos Cursos;
 
 A lógica por trás do sistema foi projetado conforme a descrição do desafio, com alguns ajustes realizados após análise durante 
 a modelagem do banco.
