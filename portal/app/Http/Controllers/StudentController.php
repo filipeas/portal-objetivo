@@ -2,14 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Curso;
 use App\Http\Requests\CreateStudent;
+use App\Http\Requests\UpdatePassword;
 use App\Http\Requests\UpdateStudent;
 use App\Http\Resources\Student;
+use App\Matricula;
 use App\User;
 use Exception;
+use Illuminate\Support\Facades\Hash;
 
 class StudentController extends Controller
 {
+    /**
+     * Método responsável por retornar view da página inicial do aluno.
+     * 
+     */
+    public function home()
+    {
+        return view('aluno.home', [
+            'cursos' => Matricula::where('student', auth()->user()->id)->first()->curso()->orderBy('created_at', 'DESC')->take(8)->get(),
+        ]);
+    }
+
     /**
      * Método responsável por retornar todos os aluno cadastrados no sistema.
      * 
@@ -17,7 +32,7 @@ class StudentController extends Controller
     public function index()
     {
         return view('administrativo.aluno.index', [
-            'alunos' => Student::collection(User::where('type', true)->get()),
+            'alunos' => Student::collection(User::where('type', true)->paginate(15)),
         ]);
     }
 
@@ -42,7 +57,7 @@ class StudentController extends Controller
                 'name' => $request->name,
                 'lastname' => $request->lastname,
                 'email' => $request->email,
-                'password' => $request->password,
+                'password' => Hash::make('123456'),
             ]);
         } catch (Exception $ex) {
             return redirect()->back()->withInput()->with([
@@ -51,7 +66,7 @@ class StudentController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.aluno.index');
+        return redirect()->route('student.config.edit');
     }
 
     /**
@@ -63,7 +78,7 @@ class StudentController extends Controller
         $aluno = User::where('id', $student)->first();
 
         if (is_null($aluno)) {
-            return redirect()->route('admin.aluno.index')->with([
+            return redirect()->route('student.config.edit')->withErrors([
                 'error' => true,
                 'message' => 'Não foi possível encontrar o aluno informado.',
             ]);
@@ -71,6 +86,7 @@ class StudentController extends Controller
 
         return view('administrativo.aluno.show', [
             'aluno' => $aluno,
+            'matriculas' => $aluno->getMatriculasStudent()->get(),
         ]);
     }
 
@@ -84,15 +100,31 @@ class StudentController extends Controller
         $aluno = User::where('id', $student)->first();
 
         if (is_null($aluno)) {
-            return redirect()->route('admin.aluno.index')->with([
+            return redirect()->route('student.config.edit')->withErrors([
                 'error' => true,
                 'message' => 'Não foi possível encontrar o aluno informado.',
             ]);
         }
 
-        return view('administrativo.aluno.edit', [
-            'aluno' => $aluno,
-        ]);
+        return view('aluno.edit');
+    }
+
+    /**
+     * Método responsável por retornar view de edição de senha.
+     * 
+     */
+    public function editPassword(int $student)
+    {
+        $aluno = User::where('id', $student)->first();
+
+        if (is_null($aluno)) {
+            return redirect()->route('student.config.edit')->withErrors([
+                'error' => true,
+                'message' => 'Não foi possível encontrar o aluno informado.',
+            ]);
+        }
+
+        return view('aluno.password');
     }
 
     /**
@@ -105,7 +137,7 @@ class StudentController extends Controller
         $aluno = User::where('id', $student)->first();
 
         if (is_null($aluno)) {
-            return redirect()->route('admin.aluno.index')->with([
+            return redirect()->route('student.config.edit')->withErrors([
                 'error' => true,
                 'message' => 'Não foi possível encontrar o aluno informado.',
             ]);
@@ -122,7 +154,31 @@ class StudentController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.aluno.index');
+        return redirect()->route('student.config.edit', ['aluno' => $aluno->id]);
+    }
+
+    public function updatePassword(UpdatePassword $request, int $student)
+    {
+        $aluno = User::where('id', $student)->first();
+
+        if (is_null($aluno)) {
+            return redirect()->route('student.config.edit')->withErrors([
+                'error' => true,
+                'message' => 'Não foi possível encontrar o aluno informado.',
+            ]);
+        }
+
+        try {
+            $aluno->password = Hash::make($request->password);
+            $aluno->save();
+        } catch (Exception $ex) {
+            return redirect()->back()->withInput()->with([
+                'error' => true,
+                'message' => $ex->getMessage(),
+            ]);
+        }
+
+        return redirect()->route('student.config.edit', ['aluno' => $aluno->id]);
     }
 
     /**
@@ -134,7 +190,7 @@ class StudentController extends Controller
         $aluno = User::where('id', $student)->first();
 
         if (is_null($aluno)) {
-            return redirect()->route('admin.aluno.index')->with([
+            return redirect()->route('student.config.edit')->withErrors([
                 'error' => true,
                 'message' => 'Não foi possível encontrar o aluno informado.',
             ]);
@@ -142,6 +198,6 @@ class StudentController extends Controller
 
         $aluno->delete();
 
-        return redirect()->route('admin.aluno.index');
+        return redirect()->route('student.config.edit');
     }
 }

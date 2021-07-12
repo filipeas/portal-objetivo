@@ -53,19 +53,24 @@ Route::group(['prefix' => 'administrativo', 'middleware' => ['auth', 'is_admin']
 
     // ROTAS DA MATRICULA
     Route::get('/matricula/todos', 'MatriculaController@index')->name('admin.matricula.index');
-    Route::get('/matricula/cadastrar', 'MatriculaController@create')->name('admin.matricula.create');
+    Route::get('/matricula/cadastrar/aluno/{student}', 'MatriculaController@create')->name('admin.matricula.create');
     Route::post('/matricula/cadastrar/do', 'MatriculaController@store')->name('admin.matricula.store');
     Route::get('/matricula/{matricula}/visualizar', 'MatriculaController@show')->name('admin.matricula.show');
     Route::delete('/matricula/{matricula}/excluir/do', 'MatriculaController@destroy')->name('admin.matricula.destroy');
 });
 
-// Route::group(['prefix' => 'aluno', 'middleware' => ['auth', 'is_student']], function () {
-//     // ROTAS DE PERFIL
-//     Route::get('', '');
+Route::group(['prefix' => 'aluno', 'middleware' => ['auth', 'is_student']], function () {
+    // ROTAS DE PERFIL
+    Route::get('inicio', 'StudentController@home')->name('student.home');
+    Route::get('/editar/aluno/{aluno}', 'StudentController@edit')->name('student.config.edit');
+    Route::get('/editar/senha/aluno/{aluno}', 'StudentController@editPassword')->name('student.config.edit.password');
+    Route::put('/editar/aluno/{aluno}/do', 'StudentController@update')->name('student.config.update');
+    Route::put('/editar/senha/aluno/{aluno}/do', 'StudentController@updatePassword')->name('student.config.update.password');
 
-//     // ROTAS DO CURSO
-//     Route::get('', '');
+    // ROTAS DO CURSO
+    Route::get('curso/todos', 'CursoController@indexStudent')->name('student.curso.index');
+    Route::get('/curso/{slug_curso}/visualizar', 'CursoController@showStudent')->name('student.curso.show');
 
-//     // ROTAS DO MATERIAL
-//     Route::get('', '');
-// });
+    // ROTAS DO MATERIAL
+    Route::get('/material/{material}/visualizar', 'MaterialController@showStudent')->name('student.material.show');
+});

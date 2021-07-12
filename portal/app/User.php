@@ -43,9 +43,9 @@ class User extends Authenticatable
         return $this->hasMany(User::class, 'user', 'id');
     }
 
-    public function matricula()
+    public function getMatriculasStudent()
     {
-        return $this->hasMany(Matricula::class, 'user', 'id');
+        return $this->hasMany(Matricula::class, 'student', 'id');
     }
 
     public function curso()

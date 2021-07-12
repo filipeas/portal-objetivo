@@ -25,23 +25,19 @@
             </div>
 
             @if (session()->get('error'))
-                @if (session()->get('status') == 404)
-                    <div class="alert alert-danger" role="alert">
-                        {{ session()->get('message') }}
-                    </div>
-                @endif
-                @if (session()->get('status') == 422)
-                {{dd(session()->get('message'))}}
-                    <div class="alert alert-danger" role="alert">
-                        @foreach (ession()->get('message') as $item)
-                            @foreach ($item as $itemErr)
-                                @foreach ($itemErr as $msg)
-                                    {{ $msg }}
-                                @endforeach
-                            @endforeach
+                <div class="alert alert-danger" role="alert">
+                    {{ session()->get('message') }} <br>
+                </div>
+            @endif
+
+            @if (count($errors) > 0)
+                <div class="alert alert-danger" role="alert">
+                    @foreach ($errors->messages() as $message)
+                        @foreach ($message as $error)
+                            * {{ $error }} <br>
                         @endforeach
-                    </div>
-                @endif
+                    @endforeach
+                </div>
             @endif
 
             <!-- Login Form -->

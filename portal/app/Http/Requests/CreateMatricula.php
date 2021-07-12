@@ -6,9 +6,12 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateMatricula extends FormRequest
 {
-    public function response(array $errors)
+    public function messages()
     {
-        return response()->json($errors, 422);
+        return [
+            'aluno.*' => 'Você deve informar um aluno válido.',
+            'curso.*' => 'Você deve informar um curso válido.',
+        ];
     }
 
     /**
@@ -29,8 +32,8 @@ class CreateMatricula extends FormRequest
     public function rules()
     {
         return [
-            'aluno' => ['required', 'exits:users,id'],
-            'curso' => ['required', 'exits:cursos,id'],
+            'aluno' => ['required', 'exists:users,id'],
+            'curso' => ['required', 'exists:cursos,id'],
         ];
     }
 }

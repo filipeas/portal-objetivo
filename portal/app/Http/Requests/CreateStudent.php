@@ -6,9 +6,13 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateStudent extends FormRequest
 {
-    public function response(array $errors)
+    public function messages()
     {
-        return response()->json($errors, 422);
+        return [
+            'name.*' => 'Você deve informar pelo menos 3 caracteres e no máximo 50 caracteres no campo NOME',
+            'lastname.*' => 'Você deve informar pelo menos 3 caracteres e no máximo 50 caracteres no campo SOBRENOME',
+            'email.*' => 'Você deve informar uma email válido.',
+        ];
     }
 
     /**
@@ -32,8 +36,6 @@ class CreateStudent extends FormRequest
             'name' => ['required', 'min:3', 'max: 50'],
             'lastname' => ['required', 'min:3', 'max: 50'],
             'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required', 'min:6', 'max:255'],
-            'c_password' => ['required', 'same:password'],
         ];
     }
 }

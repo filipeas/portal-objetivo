@@ -23,7 +23,7 @@ class MatriculaController extends Controller
     public function index()
     {
         return view('administrativo.matricula.index', [
-            'matriculas' => ResourcesMatricula::collection(Matricula::all()),
+            'matriculas' => ResourcesMatricula::collection(Matricula::all())
         ]);
     }
 
@@ -32,10 +32,19 @@ class MatriculaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(int $student)
     {
+        $aluno = User::where('id', $student)->first();
+
+        if (is_null($aluno)) {
+            return redirect()->route('admin.student.index')->withErrors([
+                'error' => true,
+                'message' => 'Não foi possível encontrar o aluno informado.',
+            ]);
+        }
+
         return view('administrativo.matricula.create', [
-            'alunos' => ResourceStudent::collection(User::where('type', true)->get()),
+            'aluno' => $aluno,
             'cursos' => ResourceCurso::collection(Curso::all()),
         ]);
     }
@@ -50,19 +59,19 @@ class MatriculaController extends Controller
      */
     public function store(CreateMatricula $request)
     {
-        if (Matricula::where('aluno', $request->aluno)->where('curso', $request->curso)->exists()) {
-            return redirect()->route('admin.matricula.index')->with([
+        if (!is_null(Matricula::where('student', $request->aluno)->where('curso', $request->curso)->first())) {
+            return redirect()->back()->withErrors([
                 'error' => true,
                 'message' => 'Você não pode criar essa matrícula, pois o aluno já está matriculado no curso selecionado.',
             ]);
         }
 
         try {
-            $matricula = Matricula::create([
-                'user' => auth()->user()->id,
-                'aluno' => $request->aluno,
-                'curso' => $request->curso,
-            ]);
+            $matricula = new Matricula();
+            $matricula->user = auth()->user()->id;
+            $matricula->student = $request->aluno;
+            $matricula->curso = $request->curso;
+            $matricula->save();
         } catch (Exception $ex) {
             return redirect()->back()->withInput()->with([
                 'error' => true,
@@ -70,7 +79,7 @@ class MatriculaController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.matricula.index');
+        return redirect()->route('admin.student.show', ['student' => $request->aluno]);
     }
 
     /**
@@ -137,6 +146,6 @@ class MatriculaController extends Controller
 
         $matricula->delete();
 
-        return redirect()->route('admin.matricula.index');
+        return redirect()->route('admin.student.show', ['student' => $matricula->student]);
     }
 }

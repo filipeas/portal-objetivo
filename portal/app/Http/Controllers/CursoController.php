@@ -7,6 +7,8 @@ use App\Curso;
 use App\Http\Requests\CreateCurso;
 use App\Http\Requests\UpdateCurso;
 use App\Http\Resources\Curso as ResourcesCurso;
+use App\Material;
+use App\Matricula;
 use Exception;
 use \Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -47,6 +49,13 @@ class CursoController extends Controller
     public function index()
     {
         return view('administrativo.curso.index', [
+            'cursos' => ResourcesCurso::collection(Curso::paginate(150)),
+        ]);
+    }
+
+    public function indexStudent()
+    {
+        return view('aluno.curso.index', [
             'cursos' => ResourcesCurso::collection(Curso::paginate(150)),
         ]);
     }
@@ -119,6 +128,24 @@ class CursoController extends Controller
         }
 
         return view('administrativo.curso.show', [
+            'curso' => $curso,
+            'matriculas' => $curso->matricula()->get(),
+            'materiais' => $curso->material()->get(),
+        ]);
+    }
+
+    public function showStudent(string $slug_curso)
+    {
+        $curso = Matricula::where('student', auth()->user()->id)->first()->curso()->where('slug', $slug_curso)->first();
+
+        if (is_null($curso)) {
+            return redirect()->route('student.curso.index')->with([
+                'error' => true,
+                'message' => 'Não foi possível encontrar o curso informado.',
+            ]);
+        }
+
+        return view('aluno.curso.show', [
             'curso' => $curso,
             'materiais' => $curso->material()->get(),
         ]);

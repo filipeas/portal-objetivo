@@ -6,9 +6,15 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateAdministrador extends FormRequest
 {
-    public function response(array $errors)
+    public function messages()
     {
-        return response()->json($errors, 422);
+        return [
+            'name.*' => 'Você deve informar pelo menos 3 caracteres e no máximo 50 caracteres no campo NOME',
+            'lastname.*' => 'Você deve informar pelo menos 3 caracteres e no máximo 50 caracteres no campo SOBRENOME',
+            'email.*' => 'Você deve informar um email válido.',
+            'password.*' => 'Você deve informar uma senha entre 6 e 255 caracteres.',
+            'c_password.*' => 'As senhas não condizem.',
+        ];
     }
 
     /**

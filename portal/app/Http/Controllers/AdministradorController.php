@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Curso;
 use App\Http\Requests\CreateAdministrador;
 use App\Http\Requests\UpdateAdministrador;
 use App\Http\Resources\Administrador;
+use App\Matricula;
 use App\User;
 use Exception;
 
@@ -15,7 +17,10 @@ class AdministradorController extends Controller
      */
     public function home()
     {
-        return view('administrativo.home');
+        return view('administrativo.home', [
+            'cursos' => Curso::orderBy('created_at', 'DESC')->take(8)->get(),
+            'matriculas' => Matricula::orderBy('created_at', 'DESC')->take(8)->get(),
+        ]);
     }
 
     /**
@@ -59,7 +64,7 @@ class AdministradorController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.all.index');
+        return redirect()->route('admin.home');
     }
 
     /**
@@ -72,13 +77,13 @@ class AdministradorController extends Controller
         $admin = User::where('id', $administrador)->first();
 
         if (is_null($admin)) {
-            return redirect()->route('admin.all.index')->with([
+            return redirect()->route('admin.home')->withErrors([
                 'error' => true,
                 'message' => 'Não foi possível encontrar o administrador informado.',
             ]);
         }
 
-        return view('administrativo.admin.edit', [
+        return view('administrativo.edit', [
             'admin' => $admin,
         ]);
     }
@@ -93,7 +98,7 @@ class AdministradorController extends Controller
         $admin = User::where('id', $administrador)->first();
 
         if (is_null($admin)) {
-            return redirect()->route('admin.all.index')->with([
+            return redirect()->route('admin.home')->withErrors([
                 'error' => true,
                 'message' => 'Não foi possível encontrar o administrador informado.',
             ]);
@@ -110,7 +115,7 @@ class AdministradorController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.all.index');
+        return redirect()->route('admin.config.edit', ['administrador' => $administrador]);
     }
 
     /**
@@ -122,14 +127,14 @@ class AdministradorController extends Controller
         $admin = User::where('id', $administrador)->first();
 
         if (auth()->user()->id == $admin->id) {
-            return redirect()->route('admin.all.index')->with([
+            return redirect()->route('admin.home')->withErrors([
                 'error' => true,
                 'message' => 'Você não pode excluir sua própria conta.',
             ]);
         }
 
         if (is_null($admin)) {
-            return redirect()->route('admin.all.index')->with([
+            return redirect()->route('admin.home')->withErrors([
                 'error' => true,
                 'message' => 'Não foi possível encontrar o administrador informado.',
             ]);
@@ -137,6 +142,6 @@ class AdministradorController extends Controller
 
         $admin->delete();
 
-        return redirect()->route('admin.all.index');
+        return redirect()->route('admin.home');
     }
 }

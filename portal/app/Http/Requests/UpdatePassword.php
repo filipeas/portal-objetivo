@@ -2,15 +2,16 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ValidCurrentUserPassword;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateStudent extends FormRequest
+class UpdatePassword extends FormRequest
 {
     public function messages()
     {
         return [
-            'name.*' => 'Você deve informar pelo menos 3 caracteres e no máximo 50 caracteres no campo NOME',
-            'lastname.*' => 'Você deve informar pelo menos 3 caracteres e no máximo 50 caracteres no campo SOBRENOME',
+            'c_password.*' => 'Você deve informar sua senha atual.',
+            'password.*' => 'Você deve informar uma nova senha de no mínimo 6 caracteres e no máximo 255.',
         ];
     }
 
@@ -32,8 +33,8 @@ class UpdateStudent extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'min:3', 'max: 50'],
-            'lastname' => ['required', 'min:3', 'max: 50'],
+            'c_password' => ['required', new ValidCurrentUserPassword()],
+            'password' => ['required', 'min:6', 'max:255'],
         ];
     }
 }

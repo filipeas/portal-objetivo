@@ -162,6 +162,23 @@ class MaterialController extends Controller
         ]);
     }
 
+    public function showStudent(int $material)
+    {
+        $materialObj = Material::where('id', $material)->first();
+
+        if (is_null($materialObj)) {
+            return redirect()->route('admin.curso.index')->withErrors([
+                'error' => true,
+                'message' => 'Não foi possível encontrar o material informado.',
+            ]);
+        }
+
+        return view('aluno.material.show', [
+            'curso' => $materialObj->curso()->first(),
+            'material' => $materialObj,
+        ]);
+    }
+
     /**
      * Método responsável por retornar view de edição de um material
      * de um curso

@@ -21,6 +21,16 @@
                 </div>
             @endif
 
+            @if (count($errors) > 0)
+                <div class="alert alert-danger" role="alert">
+                    @foreach ($errors->messages() as $message)
+                        @foreach ($message as $error)
+                            * {{ $error }} <br>
+                        @endforeach
+                    @endforeach
+                </div>
+            @endif
+
             <a class="btn btn-primary"
                 href="{{ route('admin.material.create', ['slug_curso' => $curso->slug]) }}">Cadastrar novo material</a>
 
@@ -76,8 +86,43 @@
                 </div>
             @endif
 
-            <a class="btn btn-primary" href="{{ route('admin.matricula.create') }}">Cadastrar matrícula</a>
+            <a class="btn btn-primary" href="{{ route('admin.student.index') }}">Cadastrar matrícula</a>
 
+            <table class="table table-hover table-dark m-1 text-center">
+                <thead>
+                    <tr>
+                        <th scope="col">Aluno</th>
+                        <th scope="col"><i class="far fa-eye"></i></th>
+                        <th scope="col"><i class="far fa-trash-alt"></i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($matriculas as $matricula)
+                        <tr>
+                            <th scope="row">
+                                {{ $matricula->aluno()->first()->name . ' ' . $matricula->aluno()->first()->lastname }}
+                            </th>
+                            <td>
+                                <a class="btn btn-primary w-100 mt-1 mb-1"
+                                    href="{{ route('admin.student.show', ['student' => $matricula->aluno()->first()->id]) }}"><i
+                                        class="far fa-eye"></i></a>
+                            </td>
+                            <td>
+                                <form onsubmit="return confirm('Tem certeza que deseja remover o(a) aluno(a) do curso?');"
+                                    title="remover o(a) aluno(a) do curso"
+                                    action="{{ route('admin.matricula.destroy', ['matricula' => $matricula->id]) }}"
+                                    method="POST">
+                                    @csrf
+                                    @method('delete')
+                                    <button class="btn btn-danger w-100 mt-1 mb-1 deleteCategory">
+                                        <i class="far fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 

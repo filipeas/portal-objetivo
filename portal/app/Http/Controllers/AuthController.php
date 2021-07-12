@@ -31,9 +31,8 @@ class AuthController extends Controller
             else
                 return redirect()->route('admin.home');
         } else {
-            return redirect()->route('login')->with([
+            return redirect()->back()->withErrors([
                 'error' => true,
-                'status' => 404,
                 'message' => 'Verifique seu e-mail ou senha e tente novamente.',
             ]);
         }

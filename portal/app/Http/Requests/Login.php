@@ -6,13 +6,12 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class Login extends FormRequest
 {
-    public function response(array $errors)
+    public function messages()
     {
-        return redirect()->back()->withInput()->with([
-            'error' => true,
-            'status' => 422,
-            'message' => [$errors],
-        ]);
+        return [
+            'email.*' => 'Email inválido.',
+            'password.*' => 'Senha inválida.',
+        ];
     }
 
     /**
@@ -34,7 +33,7 @@ class Login extends FormRequest
     {
         return [
             'email' => ['required', 'email'],
-            'password' => ['required', 'min:6'],
+            'password' => ['required', 'min:6', 'max:255'],
         ];
     }
 }
